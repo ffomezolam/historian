@@ -1,10 +1,13 @@
-define( function(require) {
-    /**
-     * Exports class for handling command history
-     *
-     * @module historian
-     */
-
+/**
+ * Exports class for handling command history
+ *
+ * @module historian
+ */
+(function(name, context, definition) {
+    if(typeof module !== 'undefined' && module.exports) module.exports = definition();
+    else if(typeof define ==='function' && define.amd) define(definition);
+    else context[name] = definition();
+})('Historian', this, function() {
     function isArray(o) {
         return Object.prototype.toString.call(o) === "[object Array]";
     }
