@@ -1,0 +1,17 @@
+{
+  "name": "historian",
+  "version": "0.1.0",
+  "description": "Basic command history manager",
+  "main": "historian.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ffomezolam/historian.git"
+  },
+  "author": "Andrew Malozemoff",
+  "license": "BSD",
+  "gitHead": "887e37f30457bebbd6a29689c3029f47408e4500",
+  "readmeFilename": "README.md"
+}
