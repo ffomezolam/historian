@@ -9,7 +9,7 @@
     else context[name] = definition();
 })('Historian', this, function() {
     function isArray(o) {
-        return Object.prototype.toString().call(o) === "[object Array]";
+        return Object.prototype.toString.call(o) === "[object Array]";
     }
 
     /**
