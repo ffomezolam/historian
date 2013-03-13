@@ -14,6 +14,7 @@
 
     /**
      * Simple history manager.
+     *
      *      // NOTE: this class was designed to work with functions that 
      *      // modify instance, global, or static variable within the
      *      // function body.  For example:
