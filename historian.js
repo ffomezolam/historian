@@ -98,6 +98,22 @@
          * @chainable
          * @param {Function} cmd Command
          * @param {Array} [args] Command arguments
+         * @example
+         *      // use register() within the function you want to make undo- or
+         *      // redo-able:
+         *      var x = 1;
+         *      function doSomething() {
+         *          // register the inverse operation...
+         *          historianInstance.register(function() {
+         *              // and register the inverse of the inverse as well
+         *              // to allow redo...
+         *              historianInstance.register(doSomething);
+         *              x = 1;
+         *          });
+         *
+         *          // and this is the function's operation
+         *          x = 5 * 10 * 20;
+         *      }
          */
         register: function(cmd, args) {
             if(!isArray(args)) args = [args];
