@@ -50,25 +50,28 @@
      * @param {Object} context Context for commands
      * @param {Number} [size] Size of undo/redo stack
      * @example
-     *      var h = new Historian(window);
-     *      var x = 1;
-     *      function add() {
-     *          h.register(sub);
-     *          x++;
+     *      function Ops() {
+     *          this.x = 1;
+     *          this.h = new Historian(this);
      *      }
-     *      function sub() {
-     *          h.register(add);
-     *          x--;
+     *      Ops.prototype.add = function() {
+     *          this.h.register(this.sub);
+     *          this.x++;
+     *      }
+     *      Ops.prototype.sub = function() {
+     *          this.h.register(this.add);
+     *          this.x--;
      *      }
      *
      *      // try it!
-     *      add();      // x == 2
-     *      h.undo();   // x == 1
-     *      sub();      // x == 0
-     *      add();      // x == 1
-     *      add();      // x == 2
-     *      h.undo(2);  // x == 0
-     *      h.redo();   // x == 1
+     *      var o = new Ops();
+     *      o.add();      // o.x == 2
+     *      o.h.undo();   // o.x == 1
+     *      o.sub();      // o.x == 0
+     *      o.add();      // o.x == 1
+     *      o.add();      // o.x == 2
+     *      o.h.undo(2);  // o.x == 0
+     *      o.h.redo();   // o.x == 1
      *      // etc...
      */
     function Historian(context, size) {
