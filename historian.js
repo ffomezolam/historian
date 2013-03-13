@@ -13,10 +13,49 @@
     }
 
     /**
+     * Simple history manager.
+     *      // NOTE: this class was designed to work with functions that 
+     *      // modify instance, global, or static variable within the
+     *      // function body.  For example:
+     *
+     *      var h = new Historian(window);
+     *
+     *      var x = 2;
+     *      function doublex() { x = x * 2; }
+     *
+     *      // To make this undoable, register the opposite operation within
+     *      // the function body:
+     *      function halvex() { h.register(doublex); x = x / 2; }
+     *
+     *      // Now you can undo the halvex() operation:
+     *      halvex(); // x == 1
+     *      h.undo(); // x == 2 (applies doublex() as the registered operation)
+     *
      * @class Historian
      * @constructor
-     * @param {object} context - Context for commands
-     * @param {number} [size] - Size of undo/redo stack
+     * @param {Object} context Context for commands
+     * @param {Number} [size] Size of undo/redo stack
+     * @example
+     *      var h = new Historian(window);
+     *      var x = 1;
+     *      function add() {
+     *          h.register(sub);
+     *          x++;
+     *      }
+     *      function sub() {
+     *          h.register(add);
+     *          x--;
+     *      }
+     *
+     *      // try it!
+     *      add();      // x == 2
+     *      h.undo();   // x == 1
+     *      sub();      // x == 0
+     *      add();      // x == 1
+     *      add();      // x == 2
+     *      h.undo(2);  // x == 0
+     *      h.redo();   // x == 1
+     *      // etc...
      */
     function Historian(context, size) {
         /**
@@ -24,20 +63,20 @@
          * @property context
          * @private
          */
-        this.context = context;
+        this._context = context || window;
         /**
          * Number of undo/redo levels
          * @property size
          * @private
          */
-        this.size    = size || 10;
+        this._size = size || 10;
 
         /**
          * History stacks
          * @property history
          * @private
          */
-        this.history = {
+        this._history = {
             undo: [],
             redo: []
         };
@@ -56,15 +95,14 @@
          *
          * @method register
          * @chainable
-         * @param {function} cmd - Command
-         * @param {array} [args] - Command argument array
-         * @return {Historian} Historian instance
+         * @param {Function} cmd Command
+         * @param {Array} [args] Command arguments
          */
         register: function(cmd, args) {
             if(!isArray(args)) args = [args];
             var type = this._next;
-            if(this.history[type].length >= this.size) this.history[type].unshift();
-            this.history[type].push({ command: cmd, args: args });
+            if(this._history[type].length >= this._size) this._history[type].unshift();
+            this._history[type].push({ command: cmd, args: args });
             this._next = 'undo';
             return this;
         },
@@ -74,17 +112,16 @@
          *
          * @method undo
          * @chainable
-         * @param {number} [n] - Levels to undo
-         * @return {Historian} Historian instance
+         * @param {Number} [n] Levels to undo
          */
         undo: function(n) {
             n = n || 1;
-            if(n > this.history.undo.length) n = this.history.undo.length;
-            if(this.history.undo.length < this.size) {
+            if(n > this._history.undo.length) n = this._history.undo.length;
+            if(this._history.undo.length < this._size) {
                 for(var i = 0; i < n; i++) {
-                    var entry = this.history.undo.pop();
+                    var entry = this._history.undo.pop();
                     this._next = 'redo';
-                    entry.command.apply(this.context, entry.args);
+                    entry.command.apply(this._context, entry.args);
                 }
             }
             return this;
@@ -95,17 +132,16 @@
          *
          * @method redo
          * @chainable
-         * @param {number} [n] - Levels to redo
-         * @return {Historian} Historian instance
+         * @param {Number} [n] Levels to redo
          */
         redo: function(n) {
             n = n || 1;
-            if(n > this.history.redo.length) n = this.history.redo.length;
-            if(this.history.redo.length < this.size) {
+            if(n > this._history.redo.length) n = this._history.redo.length;
+            if(this._history.redo.length < this._size) {
                 for(var i = 0; i < n; i++) {
-                    var entry = this.history.redo.pop();
+                    var entry = this._history.redo.pop();
                     this._next = 'undo';
-                    entry.command.apply(this.context, entry.args);
+                    entry.command.apply(this._context, entry.args);
                 }
             }
             return this;
