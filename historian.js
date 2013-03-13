@@ -32,6 +32,19 @@
      *      halvex(); // x == 1
      *      h.undo(); // x == 2 (applies doublex() as the registered operation)
      *
+     *      // BUT: historian won't really work if you try using it like this:
+     *      function add(a, b) { 
+     *          h.register(sub, [a, b]);
+     *          return a + b; 
+     *      }
+     *      function sub(a, b) {
+     *          h.register(add, [a, b]);
+     *          return a - b;
+     *      }
+     *      x = add(a, b); // can't undo this!
+     *
+     *      // MORAL: the undoable value must be set within the function (for now)
+     *
      * @class Historian
      * @constructor
      * @param {Object} context Context for commands
